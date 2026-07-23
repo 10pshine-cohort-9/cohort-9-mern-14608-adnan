@@ -1,5 +1,3 @@
-const nodeEnv = process.env.NODE_ENV;
-
-export const isProd = nodeEnv === "production";
-export const isDev = nodeEnv === "development";
-export const isTest = nodeEnv === "test";
+export const isProd: boolean = process.env.NODE_ENV === "production";
+export const isDev: boolean = process.env.NODE_ENV === "development";
+export const isTest: boolean = process.env.NODE_ENV === "test";
