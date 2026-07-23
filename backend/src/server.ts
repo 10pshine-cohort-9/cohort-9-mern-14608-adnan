@@ -11,8 +11,20 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
   process.exit(1);
 }
 
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    logger.info(`Server running on port ${PORT}`);
-  });
-});
+const start = async (): Promise<void> => {
+  try {
+    await connectDB();
+    const server = app.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT}`);
+    });
+    server.on("error", (err) => {
+      logger.error({ err }, "Server failed to start");
+      process.exit(1);
+    });
+  } catch (err) {
+    logger.error({ err }, "Startup failed");
+    process.exit(1);
+  }
+};
+
+start();
