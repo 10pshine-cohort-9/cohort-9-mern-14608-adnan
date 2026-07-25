@@ -12,7 +12,12 @@ const errorHandler = (
     res.statusCode >= 400 && res.statusCode < 600 ? res.statusCode : 500;
   const showDetails = isDev || isTest;
 
-  logger.error({ err, path: req.path, method: req.method }, err.message);
+  const sanitizeLogMessage = (message: string): string => message.replace(/[\r\n]/g, " ");
+
+  logger.error(
+    { err, path: req.path, method: req.method },
+    sanitizeLogMessage(err.message)
+  );
 
   res.status(statusCode).json({
     success: false,
