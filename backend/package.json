@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "notes app backend",
   "type": "module",
-    "main": "dist/server.js",
-    "scripts": {
-      "dev": "tsx watch src/server.ts",
-      "build": "tsc",
-      "start": "node dist/server.js",
-      "test": "cross-env NODE_ENV=test mocha"
-    },
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/server.js",
+    "test": "cross-env NODE_ENV=test mocha"
+  },
   "keywords": [],
   "author": "Adnan Ahmad",
   "license": "ISC",
@@ -19,6 +19,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.6.0",
     "express-validator": "^7.3.2",
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
