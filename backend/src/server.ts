@@ -2,8 +2,17 @@ import "dotenv/config";
 import app from "./app.js";
 import connectDB from "./config/db.js";
 import logger from "./config/logger.js";
+import { validateEnv } from "./config/env.js";
 
 const main = async (): Promise<void> => {
+  try {
+    validateEnv();
+  } catch (err) {
+    logger.error({ err }, "Invalid environment configuration");
+    process.exitCode = 1;
+    return;
+  }
+
   const rawPort = process.env.PORT || "5000";
   const PORT = Number(rawPort);
 

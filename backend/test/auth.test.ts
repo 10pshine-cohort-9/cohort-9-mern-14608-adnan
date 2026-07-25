@@ -5,19 +5,32 @@ import { expect } from "chai";
 import app from "../src/app.js";
 import User from "../src/models/User.js";
 
-describe("Auth API Test", () => {
+describe("Auth API", () => {
   before(async () => {
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(process.env.MONGO_URI as string);
+    try {
+      if (mongoose.connection.readyState === 0) {
+        await mongoose.connect(process.env.MONGO_URI as string);
+      }
+    } catch (err) {
+      throw err;
     }
   });
 
   afterEach(async () => {
-    await User.deleteMany({});
+    try {
+      // Only ever delete accounts this test suite itself created — never a blanket wipe
+      await User.deleteMany({ email: { $regex: /@example\.com$/ } });
+    } catch (err) {
+      throw err;
+    }
   });
 
   after(async () => {
-    await mongoose.connection.close();
+    try {
+      await mongoose.connection.close();
+    } catch (err) {
+      throw err;
+    }
   });
 
   it("registers a new user", async () => {

@@ -1,14 +1,21 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Model, HydratedDocument } from "mongoose";
 import bcrypt from "bcryptjs";
 
-export interface IUser extends Document {
+export interface IUser {
   name: string;
   email: string;
   password: string;
+}
+
+interface IUserMethods {
   comparePassword(candidate: string): Promise<boolean>;
 }
 
-const userSchema = new Schema<IUser>(
+type UserModel = Model<IUser, {}, IUserMethods>;
+
+export type UserDocument = HydratedDocument<IUser, IUserMethods>;
+
+const userSchema = new Schema<IUser, UserModel, IUserMethods>(
   {
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
@@ -17,18 +24,19 @@ const userSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-userSchema.pre<IUser>("save", async function (this: IUser) {
+userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  } catch (err) {
+    throw err instanceof Error ? err : new Error("Password hashing failed");
+  }
 });
 
-userSchema.methods.comparePassword = function (
-  this: IUser,
-  candidate: string
-): Promise<boolean> {
+userSchema.method("comparePassword", async function (candidate: string) {
   return bcrypt.compare(candidate, this.password);
-};
+});
 
 userSchema.set("toJSON", {
   transform: (_doc, ret) => {
@@ -37,5 +45,5 @@ userSchema.set("toJSON", {
   },
 });
 
-const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
+const User = mongoose.model<IUser, UserModel>("User", userSchema);
 export default User;
