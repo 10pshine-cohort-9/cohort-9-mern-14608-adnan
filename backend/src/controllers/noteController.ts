@@ -52,9 +52,16 @@ export const updateNote = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const { title, content } = req.body;
+
+    const updates: Partial<NoteBody> = {
+      ...(title !== undefined ? { title } : {}),
+      ...(content !== undefined ? { content } : {}),
+    };
+
     const note = await Note.findOneAndUpdate(
       { _id: req.params.id, user: req.user!.id },
-      { $set: req.body },
+      { $set: updates },
       { new: true, runValidators: true }
     );
     if (!note) {

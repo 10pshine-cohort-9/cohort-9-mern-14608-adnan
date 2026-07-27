@@ -35,9 +35,12 @@ userSchema.pre("save", async function () {
 });
 
 userSchema.method("comparePassword", async function (candidate: string) {
-  return bcrypt.compare(candidate, this.password);
+  try {
+    return await bcrypt.compare(candidate, this.password);
+  } catch (err) {
+    throw err instanceof Error ? err : new Error("Password comparison failed");
+  }
 });
-
 userSchema.set("toJSON", {
   transform: (_doc, ret) => {
     const { password, ...rest } = ret;
