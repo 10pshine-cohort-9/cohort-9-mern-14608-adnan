@@ -1,8 +1,8 @@
 import pino from "pino";
-import { isDev } from "./env.js";
+import { isDev, isTest } from "./env.js";
 
 const logger = pino({
-  level: isDev ? "debug" : "info",
+  level: isTest ? "silent" : isDev ? "debug" : "info",
   transport: isDev
     ? {
         target: "pino-pretty",
