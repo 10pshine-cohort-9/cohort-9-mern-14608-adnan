@@ -20,7 +20,7 @@ Set `VITE_API_URL` in `.env` to point at the backend (default: `http://localhost
 ```bash
 npm run dev       # start dev server
 npm run build     # production build
-npm test          # run Jest tests
+npm run typecheck # check TypeScript types
 ```
 
 Runs on `http://localhost:5173`. Requires the backend running for auth/notes to work.
