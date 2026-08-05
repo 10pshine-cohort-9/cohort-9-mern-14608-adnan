@@ -1,8 +1,7 @@
-/* eslint-disable react-refresh/only-export-components */
 import * as React from "react"
-
-type Theme = "dark" | "light" | "system"
-type ResolvedTheme = "dark" | "light"
+import type { ReactElement } from "react"
+import { ThemeProviderContext } from "./theme-context"
+import type { Theme, ResolvedTheme } from "./theme-context"
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -11,23 +10,13 @@ type ThemeProviderProps = {
   disableTransitionOnChange?: boolean
 }
 
-type ThemeProviderState = {
-  theme: Theme
-  setTheme: (theme: Theme) => void
-}
-
 const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)"
 const THEME_VALUES: Theme[] = ["dark", "light", "system"]
-
-const ThemeProviderContext = React.createContext<
-  ThemeProviderState | undefined
->(undefined)
 
 function isTheme(value: string | null): value is Theme {
   if (value === null) {
     return false
   }
-
   return THEME_VALUES.includes(value as Theme)
 }
 
@@ -35,7 +24,6 @@ function getSystemTheme(): ResolvedTheme {
   if (window.matchMedia(COLOR_SCHEME_QUERY).matches) {
     return "dark"
   }
-
   return "light"
 }
 
@@ -62,18 +50,15 @@ function isEditableTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
     return false
   }
-
   if (target.isContentEditable) {
     return true
   }
-
   const editableParent = target.closest(
     "input, textarea, select, [contenteditable='true']"
   )
   if (editableParent) {
     return true
   }
-
   return false
 }
 
@@ -83,13 +68,12 @@ export function ThemeProvider({
   storageKey = "theme",
   disableTransitionOnChange = true,
   ...props
-}: ThemeProviderProps) {
+}: ThemeProviderProps): ReactElement {
   const [theme, setThemeState] = React.useState<Theme>(() => {
     const storedTheme = localStorage.getItem(storageKey)
     if (isTheme(storedTheme)) {
       return storedTheme
     }
-
     return defaultTheme
   })
 
@@ -185,7 +169,7 @@ export function ThemeProvider({
         return
       }
 
-      if (event.key !== storageKey) {
+      if (event.key !== storageKey && event.key !== null) {
         return
       }
 
@@ -217,14 +201,4 @@ export function ThemeProvider({
       {children}
     </ThemeProviderContext.Provider>
   )
-}
-
-export const useTheme = () => {
-  const context = React.useContext(ThemeProviderContext)
-
-  if (context === undefined) {
-    throw new Error("useTheme must be used within a ThemeProvider")
-  }
-
-  return context
 }
