@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes } from "react-router";
+import type { ReactElement } from "react";
 import { AuthProvider } from "@/context/AuthContext";
 
-function App() {
+function App(): ReactElement {
   return (
     <BrowserRouter>
       <AuthProvider>
