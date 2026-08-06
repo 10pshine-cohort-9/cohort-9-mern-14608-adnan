@@ -5,8 +5,9 @@ import logger from "./config/logger.js";
 import { validateEnv } from "./config/env.js";
 
 const main = async (): Promise<void> => {
+  let env;
   try {
-    validateEnv();
+    env = validateEnv();
   } catch (err) {
     logger.error({ err }, "Invalid environment configuration");
     process.exitCode = 1;
@@ -23,7 +24,7 @@ const main = async (): Promise<void> => {
   }
 
   try {
-    await connectDB();
+    await connectDB(env.mongoUri);
     const server = app.listen(PORT, () => {
       logger.info(`Server running on port ${PORT}`);
     });

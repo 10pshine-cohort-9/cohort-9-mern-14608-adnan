@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction, CookieOptions } from "express";
+import ms from "ms";
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 
@@ -6,7 +7,7 @@ const cookieOptions: CookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax",
-  maxAge: 7 * 24 * 60 * 60 * 1000,
+  maxAge: ms((process.env.JWT_EXPIRES_IN || "7d") as ms.StringValue),
 };
 
 interface RegisterBody {
@@ -20,6 +21,10 @@ interface LoginBody {
   password: string;
 }
 
+interface MongoDuplicateKeyError extends Error {
+  code?: number;
+}
+
 export const register = async (
   req: Request<unknown, unknown, RegisterBody>,
   res: Response,
@@ -28,15 +33,15 @@ export const register = async (
   try {
     const { name, email, password } = req.body;
 
-    const existing = await User.findOne({ email });
-    if (existing) {
-      res.status(409);
-      throw new Error("Email already in use");
-    }
+    const user = await User.create({ name, email, password }).catch((err: MongoDuplicateKeyError) => {
+      if (err?.code === 11000) {
+        res.status(409);
+        throw new Error("Email already in use");
+      }
+      throw err;
+    });
 
-    const user = await User.create({ name, email, password });
     const token = generateToken(user.id);
-
     res.cookie("token", token, cookieOptions);
     res.status(201).json({ success: true, data: user });
   } catch (err) {
