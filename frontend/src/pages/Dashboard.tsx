@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
+import type { ReactElement } from "react";
 import http from "@/lib/http";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ interface Note {
 
 const stripHtml = (html: string): string => html.replace(/<[^>]*>/g, " ").trim();
 
-const Dashboard = () => {
+const Dashboard = (): ReactElement => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [notes, setNotes] = useState<Note[]>([]);
@@ -46,6 +47,7 @@ const Dashboard = () => {
   }, []);
 
   const handleDelete = async (id: string): Promise<void> => {
+    setError("");
     try {
       await http.delete(`notes/${id}`);
       setNotes((prev) => prev.filter((n) => n._id !== id));
@@ -69,13 +71,13 @@ const Dashboard = () => {
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-semibold">Hi, {user?.name}</h1>
           <div className="flex gap-2">
-            <Link to="/profile"><Button variant="outline">Profile</Button></Link>
+            <Button variant="outline" onClick={() => navigate("/profile")}>Profile</Button>
             <Button variant="outline" onClick={handleLogout}>Log out</Button>
           </div>
         </div>
 
         <div className="mb-4">
-          <Link to="/notes/new"><Button>+ New note</Button></Link>
+          <Button onClick={() => navigate("/notes/new")}>+ New note</Button>
         </div>
 
         {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
@@ -94,9 +96,9 @@ const Dashboard = () => {
                 <CardContent>
                   <p className="line-clamp-3 text-sm text-slate-500">{stripHtml(note.content)}</p>
                   <div className="mt-4 flex gap-2">
-                    <Link to={`/notes/${note._id}`}>
-                      <Button size="sm" variant="outline">Edit</Button>
-                    </Link>
+                    <Button size="sm" variant="outline" onClick={() => navigate(`/notes/${note._id}`)}>
+                      Edit
+                    </Button>
                     <Button size="sm" variant="destructive" onClick={() => handleDelete(note._id)}>
                       Delete
                     </Button>
