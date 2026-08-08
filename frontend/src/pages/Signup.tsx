@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router";
+import type { ReactElement } from "react";
 import { isHTTPError } from "ky";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -16,9 +17,10 @@ interface SignupForm {
 
 interface ApiErrorBody {
   message?: string;
+  errors?: Array<{ msg: string }>;
 }
 
-const Signup = () => {
+const Signup = (): ReactElement => {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState<SignupForm>({ name: "", email: "", password: "" });
@@ -39,7 +41,7 @@ const Signup = () => {
     } catch (err) {
       if (isHTTPError(err)) {
         const data = err.data as ApiErrorBody | undefined;
-        setError(data?.message || "Signup failed");
+        setError(data?.message ?? data?.errors?.[0]?.msg ?? "Signup failed");
       } else {
         setError("Signup failed");
       }
