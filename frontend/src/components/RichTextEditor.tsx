@@ -11,10 +11,15 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
     extensions: [StarterKit],
     content,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
+    editorProps: {
+      attributes: {
+        class: "min-h-[180px] text-card-foreground focus:outline-none",
+      },
+    },
   });
 
   return (
-    <div className="rounded-md border border-slate-200 p-3 min-h-50">
+    <div className="rounded-md border border-border bg-card p-3">
       <EditorContent editor={editor} />
     </div>
   );

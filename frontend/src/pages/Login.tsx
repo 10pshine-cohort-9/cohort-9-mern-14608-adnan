@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface LoginForm {
   email: string;
@@ -50,7 +51,10 @@ const Login = (): ReactElement => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4">
+      <div className="flex w-full max-w-sm justify-end">
+        <ThemeToggle />
+      </div>
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Log in</CardTitle>
@@ -70,7 +74,7 @@ const Login = (): ReactElement => {
               {submitting ? "Logging in..." : "Log in"}
             </Button>
           </form>
-          <p className="mt-4 text-center text-sm text-slate-500">
+          <p className="mt-4 text-center text-sm text-muted-foreground">
             No account? <Link to="/signup" className="underline">Sign up</Link>
           </p>
         </CardContent>
