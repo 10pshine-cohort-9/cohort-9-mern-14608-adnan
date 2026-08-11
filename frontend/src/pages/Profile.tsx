@@ -45,7 +45,7 @@ const Profile = (): ReactElement => {
             Log out
           </Button>
           {logoutError && (
-            <p className="text-center text-sm text-destructive">{logoutError}</p>
+            <p role="alert" className="text-center text-sm text-destructive">{logoutError}</p>
           )}
         </CardContent>
       </Card>

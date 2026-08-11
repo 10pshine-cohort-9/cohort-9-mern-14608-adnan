@@ -13,12 +13,14 @@ const NoteEditor = () => {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [saving, setSaving] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
     let ignore = false;
 
     const loadNote = async (): Promise<void> => {
+      setLoading(true);
       try {
         const res = await http.get(`notes/${id}`).json<{ data: { title: string; content: string } }>();
         if (!ignore) {
@@ -27,6 +29,8 @@ const NoteEditor = () => {
         }
       } catch {
         if (!ignore) setError("Could not load that note.");
+      } finally {
+        if (!ignore) setLoading(false);
       }
     };
 
@@ -40,6 +44,8 @@ const NoteEditor = () => {
   }, [id, isEditing]);
 
   const handleSave = async (): Promise<void> => {
+    if (isEditing && loading) return;
+
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
       setError("Title is required.");
@@ -74,7 +80,7 @@ const NoteEditor = () => {
         <RichTextEditor content={content} onChange={setContent} />
         {error && <p className="text-sm text-red-500">{error}</p>}
         <div className="flex gap-2">
-          <Button onClick={handleSave} disabled={saving || !title}>
+          <Button onClick={handleSave} disabled={saving || loading || !title}>
             {saving ? "Saving..." : "Save"}
           </Button>
           <Button variant="outline" onClick={() => navigate("/")}>Cancel</Button>
