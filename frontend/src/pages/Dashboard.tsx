@@ -70,7 +70,7 @@ const Dashboard = (): ReactElement => {
     <div className="min-h-screen bg-background p-6">
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">Hi, {user?.name}</h1>
+          <h1 className="text-2xl font-semibold [text-shadow:0_1px_3px_rgb(0_0_0/0.3)]">Hi, {user?.name}</h1>
           <div className="flex gap-2">
             <ThemeToggle />
             <Button variant="outline" onClick={() => navigate("/profile")}>Profile</Button>

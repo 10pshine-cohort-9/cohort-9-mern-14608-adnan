@@ -40,13 +40,19 @@ const NoteEditor = () => {
   }, [id, isEditing]);
 
   const handleSave = async (): Promise<void> => {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      setError("Title is required.");
+      return;
+    }
+
     setSaving(true);
     setError("");
     try {
       if (isEditing) {
-        await http.put(`notes/${id}`, { json: { title, content } });
+        await http.put(`notes/${id}`, { json: { title: trimmedTitle, content } });
       } else {
-        await http.post("notes", { json: { title, content } });
+        await http.post("notes", { json: { title: trimmedTitle, content } });
       }
       navigate("/");
     } catch {

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { useState } from "react";
 import type { ReactElement } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -8,13 +9,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 const Profile = (): ReactElement => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [logoutError, setLogoutError] = useState<string | null>(null);
 
   const handleLogout = async (): Promise<void> => {
+    setLogoutError(null);
     try {
       await logout();
       navigate("/login");
     } catch {
-      navigate("/login");
+      setLogoutError("Logout failed. Please try again.");
     }
   };
 
@@ -28,8 +31,8 @@ const Profile = (): ReactElement => {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="flex flex-col items-center gap-2">
-          <Avatar className="h-16 w-16">
-            <AvatarFallback>{initials}</AvatarFallback>
+          <Avatar className="h-16 w-16 shadow-[0_6px_14px_rgba(0,0,0,0.5)]">
+            <AvatarFallback className="[text-shadow:0_1px_3px_rgb(0_0_0/0.3)]">{initials}</AvatarFallback>
           </Avatar>
           <CardTitle>{user?.name}</CardTitle>
         </CardHeader>
@@ -41,6 +44,9 @@ const Profile = (): ReactElement => {
           <Button variant="destructive" className="w-full" onClick={handleLogout}>
             Log out
           </Button>
+          {logoutError && (
+            <p className="text-center text-sm text-destructive">{logoutError}</p>
+          )}
         </CardContent>
       </Card>
     </div>
