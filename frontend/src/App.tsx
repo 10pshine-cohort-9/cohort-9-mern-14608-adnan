@@ -5,6 +5,8 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Dashboard from "@/pages/Dashboard";
+import NoteEditor from "@/pages/NoteEditor";
+import Profile from "@/pages/Profile";
 
 function App(): ReactElement {
   return (
@@ -15,6 +17,9 @@ function App(): ReactElement {
           <Route path="/signup" element={<Signup />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/notes/new" element={<NoteEditor />} />
+            <Route path="/notes/:id" element={<NoteEditor />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>
       </AuthProvider>
