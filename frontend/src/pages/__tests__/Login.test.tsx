@@ -5,6 +5,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthContext } from "@/context/auth-context";
 import Login from "@/pages/Login";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+jest.mock("react-router", () => require("@/test-utils/react-router-mock"));
+
 const renderWithProviders = (loginMock: jest.Mock) => {
   render(
     <ThemeProvider>
