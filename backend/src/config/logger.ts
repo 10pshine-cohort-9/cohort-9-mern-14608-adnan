@@ -1,23 +1,36 @@
 import pino, { type LevelWithSilent } from "pino";
 import { isDev, isTest } from "./env.js";
 
-let level: LevelWithSilent;
-if (isTest) {
-  level = "silent";
-} else if (isDev) {
-  level = "debug";
-} else {
-  level = "info";
+interface LoggerEnv {
+  isTest: boolean;
+  isDev: boolean;
 }
 
-const logger = pino({
-  level,
-  transport: isDev
+const resolveLoggerLevel = ({ isTest, isDev }: LoggerEnv): LevelWithSilent => {
+  if (isTest) {
+    return "silent";
+  }
+  if (isDev) {
+    return "debug";
+  }
+  return "info";
+};
+
+const resolveLoggerTransport = ({ isDev: dev }: LoggerEnv) =>
+  dev
     ? {
         target: "pino-pretty",
         options: { colorize: true, translateTime: "SYS:standard" },
       }
-    : undefined,
-});
+    : undefined;
 
+export const createLogger = (env?: LoggerEnv): ReturnType<typeof pino> => {
+  const resolvedEnv = env ?? { isTest, isDev };
+  const level = resolveLoggerLevel(resolvedEnv);
+  const transport = resolveLoggerTransport(resolvedEnv);
+  return pino({ level, transport });
+};
+
+const logger = createLogger();
 export default logger;
+
