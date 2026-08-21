@@ -21,9 +21,9 @@ import "@testing-library/jest-dom";
 
 if (typeof globalThis.requestAnimationFrame !== "function") {
   globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) =>
-    setTimeout(() => cb(performance.now()), 0)) as typeof requestAnimationFrame;
+    setTimeout(() => cb(performance.now()), 0)) as unknown as typeof requestAnimationFrame;
   globalThis.cancelAnimationFrame = ((id: number) =>
-    clearTimeout(id)) as typeof cancelAnimationFrame;
+    clearTimeout(id)) as unknown as typeof cancelAnimationFrame;
 }
 
 // jsdom does not implement layout APIs that ProseMirror/TipTap rely on.
@@ -41,20 +41,18 @@ const rectStub: DOMRect = {
   toJSON: () => ({}),
 };
 
-const rectListStub: DOMRectList = {
+const rectListStub = {
   length: 0,
-  item: () => null,
+  item: (): null => null,
   [Symbol.iterator]: function* (): Generator<DOMRect, void, unknown> {
     /* no rects */
   },
-};
+} as unknown as DOMRectList;
 
 const getClientRectsStub = (): DOMRectList => rectListStub;
 const getBoundingClientRectStub = (): DOMRect => rectStub;
 
-Node.prototype.getClientRects = getClientRectsStub;
-Node.prototype.getBoundingClientRect = getBoundingClientRectStub;
-// Overwrite jsdom's own Element implementations too (they sit closer in the prototype chain).
+// jsdom lacks layout APIs; assign on Element and Range (the types that declare these).
 Element.prototype.getClientRects = getClientRectsStub;
 Element.prototype.getBoundingClientRect = getBoundingClientRectStub;
 // ProseMirror/TipTap call getClientRects/getBoundingClientRect on a Range, not a Node.
