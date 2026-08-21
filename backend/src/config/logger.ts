@@ -1,8 +1,17 @@
-import pino from "pino";
+import pino, { type LevelWithSilent } from "pino";
 import { isDev, isTest } from "./env.js";
 
+let level: LevelWithSilent;
+if (isTest) {
+  level = "silent";
+} else if (isDev) {
+  level = "debug";
+} else {
+  level = "info";
+}
+
 const logger = pino({
-  level: isTest ? "silent" : isDev ? "debug" : "info",
+  level,
   transport: isDev
     ? {
         target: "pino-pretty",
