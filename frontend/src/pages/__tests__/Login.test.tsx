@@ -45,4 +45,15 @@ describe("Login page", () => {
 
     expect(loginMock).toHaveBeenCalledWith("test@example.com", "password123");
   });
+
+  it("shows an error message when login fails", async () => {
+    const loginMock = jest.fn().mockRejectedValue(new Error("boom"));
+    renderWithProviders(loginMock);
+
+    await userEvent.type(screen.getByLabelText(/email/i), "test@example.com");
+    await userEvent.type(screen.getByLabelText(/password/i), "password123");
+    await userEvent.click(screen.getByRole("button", { name: /log in/i }));
+
+    expect(await screen.findByText("Login failed")).toBeInTheDocument();
+  });
 });

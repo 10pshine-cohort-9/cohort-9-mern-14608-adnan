@@ -8,4 +8,14 @@ module.exports = {
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   transformIgnorePatterns: ["/node_modules/(?!(react-router|ky)/)"],
+  collectCoverage: true,
+  coverageDirectory: "<rootDir>/coverage",
+  coverageReporters: ["lcov", "text", "text-summary"],
+  collectCoverageFrom: [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/*.test.ts",
+    "!src/**/*.test.tsx",
+    "!src/test-utils/**",
+  ],
 };

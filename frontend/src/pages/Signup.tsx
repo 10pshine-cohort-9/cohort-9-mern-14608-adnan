@@ -1,7 +1,5 @@
-import { useState } from "react";
-import type { ChangeEvent, FormEvent } from "react";
+import { useState, type ChangeEvent, type SubmitEvent, type ReactElement } from "react";
 import { Link, useNavigate } from "react-router";
-import type { ReactElement } from "react";
 import { isHTTPError } from "ky";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -32,7 +30,7 @@ const Signup = (): ReactElement => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setSubmitting(true);

@@ -131,3 +131,45 @@
     @apply font-sans;
     }
 }
+
+@layer components {
+  .ProseMirror {
+    @apply text-card-foreground;
+    }
+  .ProseMirror:focus {
+    @apply outline-none;
+    }
+  .ProseMirror h1 {
+    @apply mb-2 mt-4 text-2xl font-bold;
+    }
+  .ProseMirror h2 {
+    @apply mb-2 mt-4 text-xl font-semibold;
+    }
+  .ProseMirror h3 {
+    @apply mb-2 mt-3 text-lg font-semibold;
+    }
+  .ProseMirror p {
+    @apply my-2 leading-relaxed;
+    }
+  .ProseMirror ul {
+    @apply my-2 list-disc pl-6;
+    }
+  .ProseMirror ol {
+    @apply my-2 list-decimal pl-6;
+    }
+  .ProseMirror blockquote {
+    @apply my-2 border-l-4 border-border pl-4 italic text-muted-foreground;
+    }
+  .ProseMirror code {
+    @apply rounded bg-muted px-1 py-0.5 font-mono text-sm;
+    }
+  .ProseMirror pre {
+    @apply my-2 overflow-x-auto rounded-md bg-muted p-3 font-mono text-sm;
+    }
+  .ProseMirror pre code {
+    @apply bg-transparent p-0;
+    }
+  .ProseMirror hr {
+    @apply my-4 border-border;
+    }
+}
