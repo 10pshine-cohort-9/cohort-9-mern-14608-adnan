@@ -22,7 +22,13 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
   throw new Error(`Invalid PORT value: ${rawPort}`);
 }
 
-await connectDB(env.mongoUri);
+try {
+  await connectDB(env.mongoUri);
+} catch (err) {
+  logger.error({ err }, "Failed to connect to the database");
+  process.exitCode = 1;
+  throw err;
+}
 
 const server = app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
