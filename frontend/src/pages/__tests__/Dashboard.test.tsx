@@ -12,7 +12,7 @@ jest.mock("@/lib/http", () => {
 
 import http from "@/lib/http";
 
-const note = { _id: "n1", title: "Note One", body: "Body" };
+const note = { _id: "n1", title: "Note One", content: "<p>Body</p>" };
 const logoutMock = jest.fn();
 
 const renderDash = () =>
@@ -51,65 +51,86 @@ beforeEach(() => {
 
 it("shows loading then the list of notes", async () => {
   renderDash();
-  expect(screen.getByText(/Loading notes/i)).toBeInTheDocument();
-  act(() => {
-    pendingJson.resolve({ data: [note] });
-  });
-  await waitFor(() => expect(screen.getByText("Note One")).toBeInTheDocument());
+  try {
+    expect(screen.getByText(/Loading notes/i)).toBeInTheDocument();
+    act(() => {
+      pendingJson.resolve({ data: [note] });
+    });
+    await waitFor(() => expect(screen.getByText("Note One")).toBeInTheDocument());
+  } catch (e) {
+    throw new Error(`loading notes test failed: ${e}`);
+  }
 });
 
 it("deletes a note", async () => {
   renderDash();
-  act(() => {
-    pendingJson.resolve({ data: [note] });
-  });
-  await waitFor(() => expect(screen.getByText("Note One")).toBeInTheDocument());
-  fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
-  act(() => {
-    pendingJson.resolve({ data: [note] });
-  });
-  await waitFor(() => expect(screen.getByText("Note One")).toBeInTheDocument());
-  expect(http.delete).toHaveBeenCalledWith("notes/n1");
+  try {
+    act(() => {
+      pendingJson.resolve({ data: [note] });
+    });
+    await waitFor(() => expect(screen.getByText("Note One")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
+    await waitFor(() => expect(screen.queryByText("Note One")).not.toBeInTheDocument());
+    expect(http.delete).toHaveBeenCalledWith("notes/n1");
+  } catch (e) {
+    throw new Error(`delete note test failed: ${e}`);
+  }
 });
 
 it("shows an error when notes fail to load", async () => {
   renderDash();
-  act(() => {
-    pendingJson.reject(new Error("boom"));
-  });
-  await waitFor(() =>
-    expect(screen.getByText(/Could not load your notes/i)).toBeInTheDocument()
-  );
+  try {
+    act(() => {
+      pendingJson.reject(new Error("boom"));
+    });
+    await waitFor(() =>
+      expect(screen.getByText(/Could not load your notes/i)).toBeInTheDocument()
+    );
+  } catch (e) {
+    throw new Error(`notes load error test failed: ${e}`);
+  }
 });
 
 it("reverts the note and shows an error when deletion fails", async () => {
   renderDash();
-  act(() => {
-    pendingJson.resolve({ data: [note] });
-  });
-  await waitFor(() => expect(screen.getByText("Note One")).toBeInTheDocument());
-  (http.delete as jest.Mock).mockRejectedValue(new Error("boom"));
-  fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
-  await waitFor(() => expect(screen.getByText("Note One")).toBeInTheDocument());
-  expect(screen.getByText(/Could not delete that note/i)).toBeInTheDocument();
+  try {
+    act(() => {
+      pendingJson.resolve({ data: [note] });
+    });
+    await waitFor(() => expect(screen.getByText("Note One")).toBeInTheDocument());
+    (http.delete as jest.Mock).mockRejectedValue(new Error("boom"));
+    fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
+    await waitFor(() => expect(screen.getByText("Note One")).toBeInTheDocument());
+    expect(screen.getByText(/Could not delete that note/i)).toBeInTheDocument();
+  } catch (e) {
+    throw new Error(`deletion failure test failed: ${e}`);
+  }
 });
 
 it("shows an empty state when there are no notes", async () => {
   renderDash();
-  act(() => {
-    pendingJson.resolve({ data: [] });
-  });
-  await waitFor(() =>
-    expect(screen.getByText(/No notes yet/i)).toBeInTheDocument()
-  );
+  try {
+    act(() => {
+      pendingJson.resolve({ data: [] });
+    });
+    await waitFor(() =>
+      expect(screen.getByText(/No notes yet/i)).toBeInTheDocument()
+    );
+  } catch (e) {
+    throw new Error(`empty state test failed: ${e}`);
+  }
 });
 
 it("logs the user out", async () => {
   renderDash();
-  act(() => {
-    pendingJson.resolve({ data: [note] });
-  });
-  await waitFor(() => expect(screen.getByText("Note One")).toBeInTheDocument());
-  fireEvent.click(screen.getByRole("button", { name: /Log out/i }));
-  expect(logoutMock).toHaveBeenCalled();
+  try {
+    act(() => {
+      pendingJson.resolve({ data: [note] });
+    });
+    await waitFor(() => expect(screen.getByText("Note One")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: /Log out/i }));
+    expect(logoutMock).toHaveBeenCalled();
+  } catch (e) {
+    throw new Error(`logout test failed: ${e}`);
+  }
 });

@@ -49,13 +49,17 @@ it("submits the form and registers the user", async () => {
   const user = userEvent.setup();
   const registerMock = jest.fn().mockResolvedValue(undefined);
   renderSignup(registerMock);
-  await user.type(screen.getByLabelText(/name/i), "Adnan");
-  await user.type(screen.getByLabelText(/email/i), "a@b.com");
-  await user.type(screen.getByLabelText(/password/i), "secret1");
-  await user.click(screen.getByRole("button", { name: /Sign up/i }));
-  await waitFor(() =>
-    expect(registerMock).toHaveBeenCalledWith("Adnan", "a@b.com", "secret1")
-  );
+  try {
+    await user.type(screen.getByLabelText(/name/i), "Adnan");
+    await user.type(screen.getByLabelText(/email/i), "a@b.com");
+    await user.type(screen.getByLabelText(/password/i), "secret1");
+    await user.click(screen.getByRole("button", { name: /Sign up/i }));
+    await waitFor(() =>
+      expect(registerMock).toHaveBeenCalledWith("Adnan", "a@b.com", "secret1")
+    );
+  } catch (e) {
+    throw new Error(`signup submit test failed: ${e}`);
+  }
 });
 
 it("shows the server error message on a failed registration", async () => {
@@ -64,20 +68,28 @@ it("shows the server error message on a failed registration", async () => {
     Object.assign(new Error("http-error"), { data: { message: "Email taken" } })
   );
   renderSignup(registerMock);
-  await user.type(screen.getByLabelText(/name/i), "Adnan");
-  await user.type(screen.getByLabelText(/email/i), "a@b.com");
-  await user.type(screen.getByLabelText(/password/i), "secret1");
-  await user.click(screen.getByRole("button", { name: /Sign up/i }));
-  await waitFor(() => expect(screen.getByText("Email taken")).toBeInTheDocument());
+  try {
+    await user.type(screen.getByLabelText(/name/i), "Adnan");
+    await user.type(screen.getByLabelText(/email/i), "a@b.com");
+    await user.type(screen.getByLabelText(/password/i), "secret1");
+    await user.click(screen.getByRole("button", { name: /Sign up/i }));
+    await waitFor(() => expect(screen.getByText("Email taken")).toBeInTheDocument());
+  } catch (e) {
+    throw new Error(`signup server-error test failed: ${e}`);
+  }
 });
 
 it("shows a generic error for non-http failures", async () => {
   const user = userEvent.setup();
   const registerMock = jest.fn().mockRejectedValue(new Error("network"));
   renderSignup(registerMock);
-  await user.type(screen.getByLabelText(/name/i), "Adnan");
-  await user.type(screen.getByLabelText(/email/i), "a@b.com");
-  await user.type(screen.getByLabelText(/password/i), "secret1");
-  await user.click(screen.getByRole("button", { name: /Sign up/i }));
-  await waitFor(() => expect(screen.getByText("Signup failed")).toBeInTheDocument());
+  try {
+    await user.type(screen.getByLabelText(/name/i), "Adnan");
+    await user.type(screen.getByLabelText(/email/i), "a@b.com");
+    await user.type(screen.getByLabelText(/password/i), "secret1");
+    await user.click(screen.getByRole("button", { name: /Sign up/i }));
+    await waitFor(() => expect(screen.getByText("Signup failed")).toBeInTheDocument());
+  } catch (e) {
+    throw new Error(`signup generic-error test failed: ${e}`);
+  }
 });

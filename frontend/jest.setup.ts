@@ -28,46 +28,35 @@ if (typeof globalThis.requestAnimationFrame !== "function") {
 
 // jsdom does not implement layout APIs that ProseMirror/TipTap rely on.
 Element.prototype.scrollIntoView = () => undefined;
-const rectListStub = {
-  length: 0,
-  item: () => null,
-  [Symbol.iterator]: function* () {
-    /* no rects */
-  },
-} as unknown as DOMRectList;
-const rectStub = {
+
+const rectStub: DOMRect = {
+  x: 0,
+  y: 0,
   width: 0,
   height: 0,
   top: 0,
   left: 0,
   bottom: 0,
   right: 0,
-  x: 0,
-  y: 0,
   toJSON: () => ({}),
-} as unknown as DOMRect;
-const getClientRectsStub = function () {
-  return rectListStub;
 };
-const getBoundingClientRectStub = function () {
-  return rectStub;
+
+const rectListStub: DOMRectList = {
+  length: 0,
+  item: () => null,
+  [Symbol.iterator]: function* (): Generator<DOMRect, void, unknown> {
+    /* no rects */
+  },
 };
-(Node.prototype as unknown as { getClientRects: typeof getClientRectsStub }).getClientRects =
-  getClientRectsStub;
-(
-  Node.prototype as unknown as { getBoundingClientRect: typeof getBoundingClientRectStub }
-).getBoundingClientRect = getBoundingClientRectStub;
+
+const getClientRectsStub = (): DOMRectList => rectListStub;
+const getBoundingClientRectStub = (): DOMRect => rectStub;
+
+Node.prototype.getClientRects = getClientRectsStub;
+Node.prototype.getBoundingClientRect = getBoundingClientRectStub;
 // Overwrite jsdom's own Element implementations too (they sit closer in the prototype chain).
-const ElementProto = Element.prototype as unknown as {
-  getClientRects: typeof getClientRectsStub;
-  getBoundingClientRect: typeof getBoundingClientRectStub;
-};
-ElementProto.getClientRects = getClientRectsStub;
-ElementProto.getBoundingClientRect = getBoundingClientRectStub;
+Element.prototype.getClientRects = getClientRectsStub;
+Element.prototype.getBoundingClientRect = getBoundingClientRectStub;
 // ProseMirror/TipTap call getClientRects/getBoundingClientRect on a Range, not a Node.
-const RangeProto = Range.prototype as unknown as {
-  getClientRects: typeof getClientRectsStub;
-  getBoundingClientRect: typeof getBoundingClientRectStub;
-};
-RangeProto.getClientRects = getClientRectsStub;
-RangeProto.getBoundingClientRect = getBoundingClientRectStub;
+Range.prototype.getClientRects = getClientRectsStub;
+Range.prototype.getBoundingClientRect = getBoundingClientRectStub;
