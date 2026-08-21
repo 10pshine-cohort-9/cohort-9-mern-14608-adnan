@@ -3,21 +3,31 @@ import type { ReactElement } from "react"
 import { ThemeProviderContext } from "./theme-context"
 import type { Theme, ResolvedTheme } from "./theme-context"
 
-type ThemeProviderProps = {
-  children: React.ReactNode
-  defaultTheme?: Theme
-  storageKey?: string
-  disableTransitionOnChange?: boolean
+interface ThemeProviderProps {
+  readonly children: React.ReactNode
+  readonly defaultTheme?: Theme
+  readonly storageKey?: string
+  readonly disableTransitionOnChange?: boolean
 }
 
 const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)"
-const THEME_VALUES: Theme[] = ["dark", "light", "system"]
+const THEME_VALUES: ReadonlySet<Theme> = new Set<Theme>(["dark", "light", "system"])
 
 function isTheme(value: string | null): value is Theme {
   if (value === null) {
     return false
   }
-  return THEME_VALUES.includes(value as Theme)
+  return THEME_VALUES.has(value as Theme)
+}
+
+function toggleTheme(currentTheme: Theme): Theme {
+  if (currentTheme === "dark") {
+    return "light"
+  }
+  if (currentTheme === "light") {
+    return "dark"
+  }
+  return getSystemTheme() === "dark" ? "light" : "dark"
 }
 
 function getSystemTheme(): ResolvedTheme {
@@ -142,14 +152,7 @@ export function ThemeProvider({
       }
 
       setThemeState((currentTheme) => {
-        const nextTheme =
-          currentTheme === "dark"
-            ? "light"
-            : currentTheme === "light"
-              ? "dark"
-              : getSystemTheme() === "dark"
-                ? "light"
-                : "dark"
+        const nextTheme = toggleTheme(currentTheme)
 
         localStorage.setItem(storageKey, nextTheme)
         return nextTheme
