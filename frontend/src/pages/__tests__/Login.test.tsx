@@ -39,21 +39,27 @@ describe("Login page", () => {
     const loginMock = jest.fn().mockResolvedValue(undefined);
     renderWithProviders(loginMock);
 
-    await userEvent.type(screen.getByLabelText(/email/i), "test@example.com");
-    await userEvent.type(screen.getByLabelText(/password/i), "password123");
-    await userEvent.click(screen.getByRole("button", { name: /log in/i }));
-
-    expect(loginMock).toHaveBeenCalledWith("test@example.com", "password123");
+    try {
+      await userEvent.type(screen.getByLabelText(/email/i), "test@example.com");
+      await userEvent.type(screen.getByLabelText(/password/i), "password123");
+      await userEvent.click(screen.getByRole("button", { name: /log in/i }));
+      expect(loginMock).toHaveBeenCalledWith("test@example.com", "password123");
+    } catch (e) {
+      throw new Error(`login submit test failed: ${e}`);
+    }
   });
 
   it("shows an error message when login fails", async () => {
     const loginMock = jest.fn().mockRejectedValue(new Error("boom"));
     renderWithProviders(loginMock);
 
-    await userEvent.type(screen.getByLabelText(/email/i), "test@example.com");
-    await userEvent.type(screen.getByLabelText(/password/i), "password123");
-    await userEvent.click(screen.getByRole("button", { name: /log in/i }));
-
-    expect(await screen.findByText("Login failed")).toBeInTheDocument();
+    try {
+      await userEvent.type(screen.getByLabelText(/email/i), "test@example.com");
+      await userEvent.type(screen.getByLabelText(/password/i), "password123");
+      await userEvent.click(screen.getByRole("button", { name: /log in/i }));
+      expect(await screen.findByText("Login failed")).toBeInTheDocument();
+    } catch (e) {
+      throw new Error(`login failure test failed: ${e}`);
+    }
   });
 });

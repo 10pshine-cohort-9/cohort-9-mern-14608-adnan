@@ -20,27 +20,39 @@ const TOOLBAR_LABELS = [
 describe("RichTextEditor", () => {
   it("renders the editor with a full toolbar", async () => {
     render(<RichTextEditor content="" onChange={jest.fn()} />);
-    await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Bold" })).toBeInTheDocument()
-    );
-    for (const label of TOOLBAR_LABELS) {
-      expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
+    try {
+      await waitFor(() =>
+        expect(screen.getByRole("button", { name: "Bold" })).toBeInTheDocument()
+      );
+      for (const label of TOOLBAR_LABELS) {
+        expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
+      }
+    } catch (e) {
+      throw new Error(`toolbar render test failed: ${e}`);
     }
   });
 
   it("renders the provided initial content", async () => {
     render(<RichTextEditor content="<p>Hello world</p>" onChange={jest.fn()} />);
-    await waitFor(() => expect(screen.getByText("Hello world")).toBeInTheDocument());
+    try {
+      await waitFor(() => expect(screen.getByText("Hello world")).toBeInTheDocument());
+    } catch (e) {
+      throw new Error(`initial content test failed: ${e}`);
+    }
   });
 
   it("invokes formatting commands without crashing", async () => {
     const user = userEvent.setup();
     render(<RichTextEditor content="<p>Hi</p>" onChange={jest.fn()} />);
-    await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Bold" })).toBeInTheDocument()
-    );
-    for (const label of TOOLBAR_LABELS) {
-      await user.click(screen.getByRole("button", { name: label }));
+    try {
+      await waitFor(() =>
+        expect(screen.getByRole("button", { name: "Bold" })).toBeInTheDocument()
+      );
+      for (const label of TOOLBAR_LABELS) {
+        await user.click(screen.getByRole("button", { name: label }));
+      }
+    } catch (e) {
+      throw new Error(`formatting commands test failed: ${e}`);
     }
   });
 
@@ -49,24 +61,36 @@ describe("RichTextEditor", () => {
     const { rerender } = render(
       <RichTextEditor content="<p>First</p>" onChange={onChange} />
     );
-    await waitFor(() => expect(screen.getByText("First")).toBeInTheDocument());
-    rerender(<RichTextEditor content="<p>Second</p>" onChange={onChange} />);
-    await waitFor(() => expect(screen.getByText("Second")).toBeInTheDocument());
+    try {
+      await waitFor(() => expect(screen.getByText("First")).toBeInTheDocument());
+      rerender(<RichTextEditor content="<p>Second</p>" onChange={onChange} />);
+      await waitFor(() => expect(screen.getByText("Second")).toBeInTheDocument());
+    } catch (e) {
+      throw new Error(`external content sync test failed: ${e}`);
+    }
   });
 
   it("supports undo and redo", async () => {
     const user = userEvent.setup();
     render(<RichTextEditor content="<p>Hello</p>" onChange={jest.fn()} />);
-    await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Undo" })).toBeInTheDocument()
-    );
-    await user.click(screen.getByRole("button", { name: "Undo" }));
-    await user.click(screen.getByRole("button", { name: "Redo" }));
+    try {
+      await waitFor(() =>
+        expect(screen.getByRole("button", { name: "Undo" })).toBeInTheDocument()
+      );
+      await user.click(screen.getByRole("button", { name: "Undo" }));
+      await user.click(screen.getByRole("button", { name: "Redo" }));
+    } catch (e) {
+      throw new Error(`undo/redo test failed: ${e}`);
+    }
   });
 
   it("marks the active formatting button", async () => {
     render(<RichTextEditor content="<p><strong>bold</strong></p>" onChange={jest.fn()} />);
-    const bold = await screen.findByRole("button", { name: "Bold" });
-    expect(bold).toHaveClass("bg-accent");
+    try {
+      const bold = await screen.findByRole("button", { name: "Bold" });
+      expect(bold).toHaveClass("bg-accent");
+    } catch (e) {
+      throw new Error(`active button test failed: ${e}`);
+    }
   });
 });
