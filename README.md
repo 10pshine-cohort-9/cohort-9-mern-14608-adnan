@@ -1,7 +1,7 @@
 # Notes App
 
 A full-stack notes application built for the 10Pearls Shine Program (Cohort 9, MERN track).
-Users can sign up, log in, and create, edit, and delete notes with a rich text editor —
+Users can sign up, log in, and create, edit, and delete notes with a rich text editor
 every note is scoped to its owner.
 
 Built entirely in TypeScript instead of plain JavaScript, since the repo's CodeRabbit
@@ -27,7 +27,7 @@ configuration flags missing types as HIGH severity.
 - **Tailwind CSS v4**
 - **shadcn/ui** built on **Base UI** (not Radix) with **hugeicons**
 - **react-router** (not `react-router-dom`, discontinued in v8)
-- **ky** for HTTP requests (not axios — axios had a supply chain compromise and a
+- **ky** for HTTP requests (not axios, axios had a supply chain compromise and a
   separate critical CVE; ky is smaller, fetch-based, and has no dependencies)
 - **Tiptap** for the rich text note editor
 - **Jest** + **Testing Library** for component testing (collects coverage via
@@ -166,7 +166,7 @@ All responses follow `{ success: boolean, data?, message?, errors? }`.
 | PUT | `/api/notes/:id` | Yes | Update a note (must be owned by the user) |
 | DELETE | `/api/notes/:id` | Yes | Delete a note (must be owned by the user) |
 
-Auth is via an httpOnly cookie — the frontend never handles the token directly, it
+Auth is via an httpOnly cookie. The frontend never handles the token directly, it
 just sends requests with `credentials: "include"`.
 
 ---
@@ -205,7 +205,7 @@ user's ID at the database level.
 - Request/response logging with sensitive headers (cookies, authorization) redacted
 - Global error handler returns generic messages in production, full detail only in
   development/test
-- Environment variables validated at startup — the app refuses to start with a
+- Environment variables validated at startup. The app refuses to start with a
   missing or too-short `JWT_SECRET` or a missing `MONGO_URI`
 
 ---
@@ -214,10 +214,10 @@ user's ID at the database level.
 
 Following the 10Pearls Shine branching strategy:
 
-- `main` — production-ready code
-- `develop` — integration branch
-- `feature/backend/<name>` / `feature/frontend/<name>` — feature branches
-- `bugfix/backend/<name>` / `bugfix/frontend/<name>` — bugfix branches
+- `main`: production-ready code
+- `develop`: integration branch
+- `feature/backend/<name>` / `feature/frontend/<name>`: feature branches
+- `bugfix/backend/<name>` / `bugfix/frontend/<name>`: bugfix branches
 
 Every PR targets `develop` and goes through CodeRabbit's automated review before
 merging. Feature branches are stacked (each one branches off the previous unmerged
@@ -228,8 +228,8 @@ branch rather than waiting) and rebased onto `develop` once earlier PRs merge.
 ## Testing
 
 ```bash
-cd backend && npm test    # Mocha/Chai/Supertest — real API + database integration tests
-cd frontend && npm test   # Jest + Testing Library — component tests
+cd backend && npm test    # Mocha/Chai/Supertest - real API + database integration tests
+cd frontend && npm test   # Jest + Testing Library - component tests
 ```
 
 Both `npm test` runs also emit LCOV coverage (`backend/coverage/lcov.info` and
@@ -244,10 +244,10 @@ never touch unrelated data.
 
 ## Code Quality
 
-- **CodeRabbit** reviews every PR automatically — flags missing TypeScript types,
+- **CodeRabbit** reviews every PR automatically, flags missing TypeScript types,
   async code without error handling, and React component/prop issues, per this repo's
   `.coderabbit.yaml`.
-- **SonarQube** (self-hosted) — the **Quality Gate is currently passing**:
+- **SonarQube** (self-hosted): the **Quality Gate is currently passing**:
   `new_coverage` 85.7%, `new_duplicated_lines_density` 0.0%, `new_violations` 0.
   - Backend coverage is produced by `c8`; frontend coverage by Jest with
     `collectCoverage: true`.
